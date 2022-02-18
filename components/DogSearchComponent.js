@@ -27,7 +27,9 @@ function RenderComments({ comments }) {
 }
 
 
-function RenderDogSearch({ dog }) {
+function RenderDogSearch(props) {
+    const { dog } = props
+
     if (dog) {
         return (
             <Card
@@ -37,6 +39,15 @@ function RenderDogSearch({ dog }) {
                 <Text style={{ margin: 10 }}>
                     {dog.description}
                 </Text>
+                <Icon
+                    name={props.favorite ? 'trophy' : 'heart-o'}
+                    type='font-awesome'
+                    color='#c2153e'
+                    raised
+                    reverse
+                    onPress={() => props.favorite ?
+                        console.log('Already set as a favorite') : props.markFavorite()}
+                />
             </Card>
         );
     }
@@ -48,8 +59,13 @@ class DogSearch extends Component {
         super(props);
         this.state = {
             dogs: DOGS,
-            comments: COMMENTS
+            comments: COMMENTS,
+            favorite: false
         };
+    }
+
+    markFavorite() {
+        this.setState({ favorite: true });
     }
 
     static navigationOptions = {
@@ -61,7 +77,9 @@ class DogSearch extends Component {
         const comments = this.state.comments.filter(comment => comment.dogId === dogId);
         return (
             <ScrollView>
-                <RenderDogSearch dog={dog} />
+                <RenderDogSearch dog={dog}
+                    favorite={this.state.favorite}
+                    markFavorite={() => this.markFavorite()} />
                 <RenderComments comments={comments} />
             </ScrollView>
         );

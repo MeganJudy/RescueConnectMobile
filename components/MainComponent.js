@@ -5,15 +5,27 @@ import DogSearch from './DogSearchComponent';
 import About from './AboutComponent';
 import Contact from './ContactComponent';
 import Constants from 'expo-constants';
-import { View, Platform } from 'react-native';
+import { View, Platform, StyleSheet, Text, ScrollView, Image } from 'react-native';
 import { createStackNavigator } from 'react-navigation-stack';
-import { createDrawerNavigator } from 'react-navigation-drawer';
+import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
 import { createAppContainer } from 'react-navigation';
+import { Icon } from 'react-native-elements';
+import SafeAreaView from 'react-native-safe-area-view';
 
 
 const DirectoryNavigator = createStackNavigator(
     {
-        Directory: { screen: Directory },
+        Directory: {
+            screen: Directory,
+            navigationOptions: ({ navigation }) => ({
+                headerLeft: <Icon
+                    name='paw'
+                    type='font-awesome'
+                    iconStyle={styles.stackIcon}
+                    onPress={() => navigation.toggleDrawer()}
+                />
+            })
+        },
         DogSearch: { screen: DogSearch },
         About: { screen: About },
         Contact: { screen: Contact }
@@ -36,15 +48,21 @@ const HomeNavigator = createStackNavigator(
         Home: { screen: Home }
     },
     {
-        defaultNavigationOptions: {
+        defaultNavigationOptions: ({ navigation }) => ({
             headerStyle: {
                 backgroundColor: '#0c073d'
             },
             headerTintColor: '#fff',
             headerTitleStyle: {
                 color: '#fff'
-            }
-        }
+            },
+            headerLeft: <Icon
+                name='home'
+                type='font-awesome'
+                iconStyle={styles.stackIcon}
+                onPress={() => navigation.toggleDrawer()}
+            />
+        })
     }
 );
 
@@ -53,15 +71,21 @@ const AboutNavigator = createStackNavigator(
         About: { screen: About }
     },
     {
-        defaultNavigationOptions: {
+        defaultNavigationOptions: ({ navigation }) => ({
             headerStyle: {
-                backgroundColor: '#0c073d'
+                backgroundColor: '#c2153e'
             },
             headerTintColor: '#fff',
             headerTitleStyle: {
                 color: '#fff'
-            }
-        }
+            },
+            headerLeft: <Icon
+                name='info-circle'
+                type='font-awesome'
+                iconStyle={styles.stackIcon}
+                onPress={() => navigation.toggleDrawer()}
+            />
+        })
     }
 );
 
@@ -70,28 +94,102 @@ const ContactNavigator = createStackNavigator(
         Contact: { screen: Contact }
     },
     {
-        defaultNavigationOptions: {
+        defaultNavigationOptions: ({ navigation }) => ({
             headerStyle: {
-                backgroundColor: '#0c073d'
+                backgroundColor: '#c2153e'
             },
             headerTintColor: '#fff',
             headerTitleStyle: {
                 color: '#fff'
-            }
-        }
+            },
+            headerLeft: <Icon
+                name='address-card'
+                type='font-awesome'
+                iconStyle={styles.stackIcon}
+                onPress={() => navigation.toggleDrawer()}
+            />
+        })
     }
 );
 
+const CustomDrawerContentComponent = props => (
+    <ScrollView>
+        <SafeAreaView
+            style={styles.container}
+            forceInset={{ top: 'always', horizontal: 'never' }}>
+            <View style={styles.drawerHeader}>
+                <View style={{ flex: 1 }}>
+                    <Image source={require('./images/RescuesConnectNoBackground.png')} style={styles.drawerImage} />
+                </View>
+                <View style={{ flex: 2 }}>
+                    <Text style={styles.drawerHeaderText}>Help us Save them All! </Text>
+                </View>
+            </View>
+            <DrawerItems {...props} />
+        </SafeAreaView>
+    </ScrollView>
+);
 
 const MainNavigator = createDrawerNavigator(
     {
-        Home: { screen: HomeNavigator },
-        Directory: { screen: DirectoryNavigator },
-        About: { screen: AboutNavigator },
-        Contact: { screen: ContactNavigator }
+        Home: {
+            screen: HomeNavigator,
+            navigationOptions: {
+                drawerIcon: ({ tintColor }) => (
+                    <Icon
+                        name='home'
+                        type='font-awesome'
+                        size={24}
+                        color={tintColor}
+                    />
+                )
+            }
+        },
+        Directory: {
+            screen: DirectoryNavigator,
+            navigationOptions: {
+                drawerIcon: ({ tintColor }) => (
+                    <Icon
+                        name='paw'
+                        type='font-awesome'
+                        size={24}
+                        color={tintColor}
+                    />
+                )
+            }
+        },
+        About: {
+            screen: AboutNavigator,
+            navigationOptions: {
+                drawerLabel: 'About Us',
+                drawerIcon: ({ tintColor }) => (
+                    <Icon
+                        name='info-circle'
+                        type='font-awesome'
+                        size={24}
+                        color={tintColor}
+                    />
+                )
+            }
+        },
+        Contact: {
+            screen: ContactNavigator,
+            navigationOptions: {
+                drawerLabel: 'Contact Us',
+                drawerIcon: ({ tintColor }) => (
+                    <Icon
+                        name='send'
+                        type='font-awesome'
+                        size={24}
+                        color={tintColor}
+                    />
+                )
+            }
+        }
     },
     {
-        drawerBackgroundColor: '#c2153e'
+        drawerBackgroundColor: '#c2153e',
+        contentComponent: CustomDrawerContentComponent
     }
 );
 
@@ -110,5 +208,35 @@ class Main extends Component {
         );
     }
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    drawerHeader: {
+        backgroundColor: 'white',
+        height: 100,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+        flexDirection: 'row'
+    },
+    drawerHeaderText: {
+        color: '#0c073d',
+        fontSize: 15,
+        fontWeight: 'bold',
+        paddingLeft: 30
+    },
+    drawerImage: {
+        margin: 10,
+        height: 100,
+        width: 100,
+    },
+    stackIcon: {
+        marginLeft: 10,
+        color: '#fff',
+        fontSize: 24
+    }
+});
 
 export default Main;
