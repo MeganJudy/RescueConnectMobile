@@ -1,14 +1,24 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
-import { View, Text, ScrollView, Image, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Image, StyleSheet, Animated } from 'react-native';
 import { Card } from 'react-native-elements';
 import { PARTNERS } from '../shared/partners';
+import { connect } from 'react-redux';
+import { baseUrl } from '../shared/baseUrl';
+
+const mapStateToProps = state => {
+    return {
+        dogs: state.dogs,
+        promotions: state.promotions,
+        partners: state.partners
+    };
+};
 
 function RenderItem({ item }) {
     if (item) {
         return (
             <Card
-                image={require('./images/Diamond-Naturals-Brand-Dog-OG.jpg')}
+                image={{ uri: baseUrl + item.image }}
                 title={item.name}
             >
                 <Text style={{ margin: 10 }}>
@@ -51,32 +61,45 @@ class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            partners: PARTNERS
+            scaleValue: new Animated.Value(0)
         };
     }
+
+    animate() {
+        Animated.timing(
+            this.state.scaleValue,
+            {
+                toValue: 1,
+                duration: 1500,
+                useNativeDriver: true
+            }
+        ).start();
+    }
+
+    componentDidMount() {
+        this.animate();
+    }
+
     static navigationOptions = {
         title: 'Home'
     }
 
-
     render() {
         return (
-            <View>
-                <ScrollView>
-                    <RenderWelcome>
+            <Animated.ScrollView style={{ transform: [{ scale: this.state.scaleValue }] }}>
+                <RenderWelcome>
 
-                    </RenderWelcome>
-                    <RenderItem
-                        item={this.state.partners.filter(partner => partner.featured)[0]}
-                    />
-                    <RenderItem
-                        item={this.state.partners.filter(partner => partner.featured)[1]}
-                    />
-                    <RenderItem
-                        item={this.state.partners.filter(partner => partner.featured)[2]}
-                    />
-                </ScrollView>
-            </View>
+                </RenderWelcome>
+                <RenderItem
+                    item={this.props.partners.partners.filter(partner => partner.featured)[0]}
+                />
+                <RenderItem
+                    item={this.props.partners.partners.filter(partner => partner.featured)[1]}
+                />
+                <RenderItem
+                    item={this.props.partners.partners.filter(partner => partner.featured)[2]}
+                />
+            </Animated.ScrollView>
         );
     }
 }
@@ -142,4 +165,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default Home;
+export default connect(mapStateToProps)(Home);

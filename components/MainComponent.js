@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import Home from './HomeComponent';
 import Directory from './DirectoryComponent';
 import DogSearch from './DogSearchComponent';
+import Search from './SearchComponent';
 import About from './AboutComponent';
 import Contact from './ContactComponent';
+import Favorites from './FavoritesComponent';
 import Constants from 'expo-constants';
 import { View, Platform, StyleSheet, Text, ScrollView, Image } from 'react-native';
 import { createStackNavigator } from 'react-navigation-stack';
@@ -11,7 +13,16 @@ import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
 import { createAppContainer } from 'react-navigation';
 import { Icon } from 'react-native-elements';
 import SafeAreaView from 'react-native-safe-area-view';
+import { connect } from 'react-redux';
+import {
+    fetchDogs, fetchComments, fetchPartners
+} from '../redux/ActionCreators';
 
+const mapDispatchToProps = {
+    fetchDogs,
+    fetchComments,
+    fetchPartners
+};
 
 const DirectoryNavigator = createStackNavigator(
     {
@@ -28,7 +39,8 @@ const DirectoryNavigator = createStackNavigator(
         },
         DogSearch: { screen: DogSearch },
         About: { screen: About },
-        Contact: { screen: Contact }
+        Contact: { screen: Contact },
+        Search: { screen: Search }
     },
     {
         initialRouteName: 'Directory',
@@ -58,6 +70,29 @@ const HomeNavigator = createStackNavigator(
             },
             headerLeft: <Icon
                 name='home'
+                type='font-awesome'
+                iconStyle={styles.stackIcon}
+                onPress={() => navigation.toggleDrawer()}
+            />
+        })
+    }
+);
+
+const SearchNavigator = createStackNavigator(
+    {
+        Search: { screen: Search }
+    },
+    {
+        defaultNavigationOptions: ({ navigation }) => ({
+            headerStyle: {
+                backgroundColor: '#c2153e'
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                color: '#fff'
+            },
+            headerLeft: <Icon
+                name='search'
                 type='font-awesome'
                 iconStyle={styles.stackIcon}
                 onPress={() => navigation.toggleDrawer()}
@@ -112,6 +147,29 @@ const ContactNavigator = createStackNavigator(
     }
 );
 
+const FavoritesNavigator = createStackNavigator(
+    {
+        Favorites: { screen: Favorites }
+    },
+    {
+        defaultNavigationOptions: ({ navigation }) => ({
+            headerStyle: {
+                backgroundColor: '#c2153e'
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                color: '#fff'
+            },
+            headerLeft: <Icon
+                name='heart'
+                type='font-awesome'
+                iconStyle={styles.stackIcon}
+                onPress={() => navigation.toggleDrawer()}
+            />
+        })
+    }
+);
+
 const CustomDrawerContentComponent = props => (
     <ScrollView>
         <SafeAreaView
@@ -129,6 +187,8 @@ const CustomDrawerContentComponent = props => (
         </SafeAreaView>
     </ScrollView>
 );
+
+
 
 const MainNavigator = createDrawerNavigator(
     {
@@ -148,6 +208,7 @@ const MainNavigator = createDrawerNavigator(
         Directory: {
             screen: DirectoryNavigator,
             navigationOptions: {
+                drawerLabel: 'Dog Directory',
                 drawerIcon: ({ tintColor }) => (
                     <Icon
                         name='paw'
@@ -158,6 +219,36 @@ const MainNavigator = createDrawerNavigator(
                 )
             }
         },
+        Search: {
+            screen: SearchNavigator,
+            navigationOptions: {
+                drawerLabel: 'Search for a Rescue Dog',
+                drawerIcon: ({ tintColor }) => (
+                    <Icon
+                        name='search'
+                        type='font-awesome'
+                        size={24}
+                        color={tintColor}
+                    />
+                )
+            }
+        },
+
+        Favorites: {
+            screen: FavoritesNavigator,
+            navigationOptions: {
+                drawerLabel: 'My Rescues',
+                drawerIcon: ({ tintColor }) => (
+                    <Icon
+                        name='heart'
+                        type='font-awesome'
+                        size={24}
+                        color={tintColor}
+                    />
+                )
+            }
+        },
+
         About: {
             screen: AboutNavigator,
             navigationOptions: {
@@ -196,6 +287,13 @@ const MainNavigator = createDrawerNavigator(
 const AppNavigator = createAppContainer(MainNavigator);
 
 class Main extends Component {
+
+    componentDidMount() {
+        this.props.fetchDogs();
+        this.props.fetchComments();
+        this.props.fetchPartners();
+    }
+
     render() {
         return (
             <View
@@ -239,4 +337,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Main;
+export default connect(null, mapDispatchToProps)(Main);

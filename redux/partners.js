@@ -1,4 +1,4 @@
-import * as ActionTypes from '../redux/ActionTypes';
+import * as ActionTypes from './ActionTypes';
 
 export const partners = (state = {
     isLoading: true,
@@ -18,4 +18,5 @@ export const partners = (state = {
         default:
             return state;
     }
+
 };
